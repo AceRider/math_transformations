@@ -16,8 +16,8 @@ public class HolisticMath
 
     static public float Distance(Coords point1, Coords point2)
     {
-        float diffSquared = Square(point1.x - point2.x) + 
-                            Square(point1.y - point2.y) + 
+        float diffSquared = Square(point1.x - point2.x) +
+                            Square(point1.y - point2.y) +
                             Square(point1.z - point2.z);
         float squareRoot = Mathf.Sqrt(diffSquared);
         return squareRoot;
@@ -66,7 +66,7 @@ public class HolisticMath
 
     static public Coords Rotate(Coords vector, float angle, bool clockwise) //in radians
     {
-        if(clockwise)
+        if (clockwise)
         {
             angle = 2 * Mathf.PI - angle;
         }
@@ -75,7 +75,7 @@ public class HolisticMath
         float yVal = vector.x * Mathf.Sin(angle) + vector.y * Mathf.Cos(angle);
         return new Coords(xVal, yVal, 0);
     }
-   
+
     static public Coords Translate(Coords position, Coords facing, Coords vector)
     {
         if (HolisticMath.Distance(new Coords(0, 0, 0), vector) <= 0) return position;
@@ -91,6 +91,101 @@ public class HolisticMath
         float yVal = position.y + vector.y;
         float zVal = position.z + vector.z;
         return new Coords(xVal, yVal, zVal);
+    }
+
+    static public Coords Translate(Coords position, Coords vector)
+    {
+        float[] translateValues = {1, 0, 0, vector.x,
+                                   0, 1, 0, vector.y,
+                                   0, 0, 1, vector.z,
+                                   0, 0, 0, 1 };
+        Matrix translateMatrix = new Matrix(4, 4, translateValues);
+        Matrix pos = new Matrix(4, 1, position.AsFloats());
+
+        Matrix result = translateMatrix * pos;
+        return result.AsCoords();
+    }
+
+    static public Coords Scale(Coords position, float scaleX, float scaleY, float scaleZ)
+    {
+        float[] scaleValues = {scaleX,0,0,0,
+                               0,scaleY,0,0,
+                               0,0,scaleZ,0,
+                               0,0,0,1};
+        Matrix scaleMatrix = new Matrix(4, 4, scaleValues);
+        Matrix pos = new Matrix(4, 1, position.AsFloats());
+
+        Matrix result = scaleMatrix * pos;
+        return result.AsCoords();
+    }
+
+    static public Coords Shear(Coords position, float shearX, float shearY, float shearZ)
+    {
+        float[] shearValues = {1,shearY,0,0,
+                               0,1,0,0,
+                               0,0,1,0,
+                               0,0,0,1};
+        Matrix shearMatrix = new Matrix(4, 4, shearValues);
+        Matrix pos = new Matrix(4, 1, position.AsFloats());
+
+        Matrix result = shearMatrix * pos;
+        return result.AsCoords();
+    }
+
+    static public Coords Reflect(Coords position)
+    {
+        float[] reflectValues = {-1,0,0,0,
+                               0,1,0,0,
+                               0,0,1,0,
+                               0,0,0,1};
+        Matrix reflectMatrix = new Matrix(4, 4, reflectValues);
+        Matrix pos = new Matrix(4, 1, position.AsFloats());
+
+        Matrix result = reflectMatrix * pos;
+        return result.AsCoords();
+    }
+
+    static public Coords Rotate(Coords position, float angleX, bool clockwiseX,
+                                                 float angleY, bool clockwiseY,
+                                                 float angleZ, bool clockwiseZ)
+    {
+        if(clockwiseX)
+        {
+            angleX = 2 * Mathf.PI - angleX;
+        }
+        if (clockwiseY)
+        {
+            angleY = 2 * Mathf.PI - angleY;
+        }
+        if (clockwiseZ)
+        {
+            angleZ = 2 * Mathf.PI - angleZ;
+        }
+
+        float[] xrollValues = {1,0,0,0,
+                               0,Mathf.Cos(angleX),-Mathf.Sin(angleX),0,
+                               0,Mathf.Sin(angleX),Mathf.Cos(angleX),0,
+                               0,0,0,1};
+        Matrix XRoll = new Matrix(4, 4, xrollValues);
+
+        float[] yrollValues = {Mathf.Cos(angleY),0,-Mathf.Sin(angleY),0,
+                               0,1,0,0,
+                               -Mathf.Sin(angleY),0,Mathf.Cos(angleY),0,
+                               0,0,0,1};
+        Matrix YRoll = new Matrix(4, 4, yrollValues);
+
+        float[] zrollValues = {Mathf.Cos(angleZ),-Mathf.Sin(angleZ),0,0,
+                               Mathf.Sin(angleZ),Mathf.Cos(angleZ),0,0,
+                               0,0,1,0,
+                               0,0,0,1};
+        Matrix ZRoll = new Matrix(4, 4, zrollValues);
+
+        Matrix pos = new Matrix(4, 1, position.AsFloats());
+
+        Matrix result = ZRoll * YRoll * XRoll * pos;
+
+        return result.AsCoords();
+
     }
 
     static public Coords Cross(Coords vector1, Coords vector2)
