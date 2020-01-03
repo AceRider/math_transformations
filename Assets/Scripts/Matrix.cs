@@ -25,6 +25,13 @@ public class Matrix
             return null;
     }
 
+    public float GetValue(int r, int c)
+    {
+        float mVal = 0;
+        mVal = values[r * cols + c];
+        return mVal;
+    }
+
     public override string ToString()
     {
         string matrix = "";
