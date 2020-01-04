@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de784b39dec6384a96372a0c06c0462, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eulerAngles: {x: 1, y: 1, z: 1}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0

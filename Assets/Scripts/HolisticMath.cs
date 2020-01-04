@@ -64,6 +64,15 @@ public class HolisticMath
         return newDir;
     }
 
+    static public Coords Quaternion(Coords axis, float angle)
+    {
+        Coords aN = axis.GetNormal();
+        float w = Mathf.Cos(angle / 2.0f);
+        float s = Mathf.Sin(angle / 2.0f);
+        Coords q = new Coords(aN.x * s, aN.y * s, aN.z * s, w);
+        return q;
+    }
+
     static public Coords QRotate(Coords position, Coords axis, float angle /*in degrees*/)
     {
         Coords aN = axis.GetNormal();
